@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hawks Counter</title>
+  </head>
+  <body>
+    <h1>Hawks Counter</h1>
+    <p>Say "hawks" to increase the counter!</p>
+    <h2>Count: <span id="counter">0</span></h2>
+
+    <script>
+      // Initialize the counter
+      let counter = 0;
+
+      // Update the counter display
+      const updateCounter = () => {
+        document.getElementById("counter").textContent = counter;
+      };
+
+      // Check if the browser supports SpeechRecognition
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        alert("Your browser does not support the Web Speech API.");
+      } else {
+        // Create a new instance of SpeechRecognition
+        const recognition = new SpeechRecognition();
+        recognition.lang = "en-US"; // Set language to English (US)
+        recognition.continuous = true; // Keep listening continuously
+        recognition.interimResults = false; // Only process final results
+
+        // Start the recognition process
+        recognition.start();
+
+        // Event listener for when speech is recognized
+        recognition.onresult = (event) => {
+          // Get the transcribed text
+          const transcript = event.results[
+            event.results.length - 1
+          ][0].transcript
+            .trim()
+            .toLowerCase();
+          console.log(`You said: ${transcript}`);
+
+          // Check if the phrase "hawks" was spoken
+          if (transcript === "hawks") {
+            counter++;
+            updateCounter();
+          }
+        };
+
+        // Event listener for errors
+        recognition.onerror = (event) => {
+          console.error("Speech recognition error:", event.error);
+        };
+
+        // Event listener for when recognition ends (restart it)
+        recognition.onend = () => {
+          console.log("Speech recognition stopped. Restarting...");
+          recognition.start();
+        };
+      }
+    </script>
+  </body>
+</html>
